@@ -30,6 +30,22 @@ pub trait Interface {
         pixels: impl IntoIterator<Item = [Self::Word; N]>,
     ) -> Result<(), Self::Error>;
 
+    /// Send a sequence of pixels
+    ///
+    /// `WriteMemoryStart` must be sent before calling this function
+    fn send_pixels_buffer(
+        &mut self,
+        pixels: &[u8],
+    ) -> Result<(), Self::Error>;
+
+    /// Send a sequence of pixels
+    ///
+    /// `WriteMemoryStart` must be sent before calling this function
+    fn send_pixels_buffer_u16(
+        &mut self,
+        pixels: &[u16],
+    ) -> Result<(), Self::Error>;
+
     /// Send the same pixel value multiple times
     ///
     /// `WriteMemoryStart` must be sent before calling this function
@@ -53,6 +69,20 @@ impl<T: Interface> Interface for &mut T {
         pixels: impl IntoIterator<Item = [Self::Word; N]>,
     ) -> Result<(), Self::Error> {
         T::send_pixels(self, pixels)
+    }
+
+    fn send_pixels_buffer(
+        &mut self,
+        pixels: &[u8],
+    ) -> Result<(), Self::Error> {
+        T::send_pixels_buffer(self, pixels)
+    }
+
+    fn send_pixels_buffer_u16(
+        &mut self,
+        pixels: &[u16],
+    ) -> Result<(), Self::Error> {
+        T::send_pixels_buffer_u16(self, pixels)
     }
 
     fn send_repeated_pixel<const N: usize>(
@@ -90,6 +120,18 @@ pub trait InterfacePixelFormat<Word> {
     ) -> Result<(), DI::Error>;
 
     #[doc(hidden)]
+    fn send_pixels_buffer<DI: Interface<Word = Word>>(
+        di: &mut DI,
+        pixels: &[u8],
+    ) -> Result<(), DI::Error>;
+
+    #[doc(hidden)]
+    fn send_pixels_buffer_u16<DI: Interface<Word = Word>>(
+        di: &mut DI,
+        pixels: &[u16],
+    ) -> Result<(), DI::Error>;
+
+    #[doc(hidden)]
     fn send_repeated_pixel<DI: Interface<Word = Word>>(
         di: &mut DI,
         pixel: Self,
@@ -103,6 +145,20 @@ impl InterfacePixelFormat<u8> for Rgb565 {
         pixels: impl IntoIterator<Item = Self>,
     ) -> Result<(), DI::Error> {
         di.send_pixels(pixels.into_iter().map(rgb565_to_bytes))
+    }
+
+    fn send_pixels_buffer<DI: Interface<Word = u8>>(
+        di: &mut DI,
+        pixels: &[u8],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer(pixels)
+    }
+
+    fn send_pixels_buffer_u16<DI: Interface<Word = u8>>(
+        di: &mut DI,
+        pixels: &[u16],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer_u16(pixels)
     }
 
     fn send_repeated_pixel<DI: Interface<Word = u8>>(
@@ -122,6 +178,20 @@ impl InterfacePixelFormat<u8> for Rgb666 {
         di.send_pixels(pixels.into_iter().map(rgb666_to_bytes))
     }
 
+    fn send_pixels_buffer<DI: Interface<Word = u8>>(
+        di: &mut DI,
+        pixels: &[u8],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer(pixels)
+    }
+
+    fn send_pixels_buffer_u16<DI: Interface<Word = u8>>(
+        di: &mut DI,
+        pixels: &[u16],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer_u16(pixels)
+    }
+
     fn send_repeated_pixel<DI: Interface<Word = u8>>(
         di: &mut DI,
         pixel: Self,
@@ -137,6 +207,20 @@ impl InterfacePixelFormat<u16> for Rgb565 {
         pixels: impl IntoIterator<Item = Self>,
     ) -> Result<(), DI::Error> {
         di.send_pixels(pixels.into_iter().map(rgb565_to_u16))
+    }
+
+    fn send_pixels_buffer<DI: Interface<Word = u16>>(
+        di: &mut DI,
+        pixels: &[u8],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer(pixels)
+    }
+
+    fn send_pixels_buffer_u16<DI: Interface<Word = u16>>(
+        di: &mut DI,
+        pixels: &[u16],
+    ) -> Result<(), DI::Error> {
+        di.send_pixels_buffer_u16(pixels)
     }
 
     fn send_repeated_pixel<DI: Interface<Word = u16>>(

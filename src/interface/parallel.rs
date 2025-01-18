@@ -223,6 +223,22 @@ where
         Ok(())
     }
 
+    fn send_pixels_buffer(
+        &mut self,
+        pixels: &[u8],
+    ) -> Result<(), Self::Error> {
+        // self.send_pixels_buffer(pixels)?;
+        Ok(())
+    }
+
+    fn send_pixels_buffer_u16(
+        &mut self,
+        pixels: &[u16],
+    ) -> Result<(), Self::Error> {
+        // self.send_pixels_buffer_u16(pixels)?;
+        Ok(())
+    }
+
     fn send_repeated_pixel<const N: usize>(
         &mut self,
         pixel: [Self::Word; N],

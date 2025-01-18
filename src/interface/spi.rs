@@ -69,6 +69,23 @@ impl<SPI: SpiDevice, DC: OutputPin> Interface for SpiInterface<'_, SPI, DC> {
         }
         Ok(())
     }
+    
+    fn send_pixels_buffer(
+        &mut self,
+        pixels: &[u8],
+    ) -> Result<(), Self::Error> {
+        self.spi.write(pixels).map_err(SpiError::Spi)?;
+        Ok(())
+    }
+
+    fn send_pixels_buffer_u16(
+        &mut self,
+        pixels: &[u16],
+    ) -> Result<(), Self::Error> {
+        use byte_slice_cast::*;
+        self.spi.write(pixels.as_byte_slice()).map_err(SpiError::Spi)?;
+        Ok(())
+    }
 
     fn send_repeated_pixel<const N: usize>(
         &mut self,
